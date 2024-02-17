@@ -18,7 +18,7 @@ import "./Character3.sol";
 contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     using Strings for uint256;
     uint256 public mintFee = 0.01 ether;
-    uint256 public maxMint = 2;
+    uint256 public maxMint = 1;
     uint256 public eatTime = 5 minutes;
     uint256 public playTime = 5 minutes;
     uint256 public eatPoints = 10;
