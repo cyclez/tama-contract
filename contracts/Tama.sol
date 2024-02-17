@@ -15,6 +15,8 @@ import "./Character1.sol";
 import "./Character2.sol";
 import "./Character3.sol";
 
+error TransferFailed();
+
 contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     using Strings for uint256;
     uint256 public mintFee = 0.01 ether;
@@ -35,6 +37,9 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     IERC20 foodToken;
     address public tamaFoodAddress;
+
+    address public dev1;
+    address public dev2;
 
     event levelUp(uint256 tokenId, uint8 newLevel);
     event tokenBorn(uint256 tokenId, uint256 birthTimestamp);
@@ -304,6 +309,25 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     function setTamaFoodAddress(address _tamaFoodAddress) public onlyOwner {
         tamaFoodAddress = _tamaFoodAddress;
+    }
+
+    /**
+     * -----------  Financial Functions  -----------
+     */
+
+    function withdraw() external onlyOwner {
+        uint256 balanceAfter = address(this).balance;
+        (bool s, ) = payable(dev1).call{value: balanceAfter / 2}("");
+        if (!s) revert TransferFailed();
+        (bool a, ) = payable(dev2).call{value: balanceAfter / 2}("");
+        if (!a) revert TransferFailed();
+
+        uint256 tokenBalanceAfter = foodToken.balanceOf(address(this));
+
+        if (!foodToken.transfer(dev1, tokenBalanceAfter / 2))
+            revert TransferFailed();
+        if (!foodToken.transfer(dev2, tokenBalanceAfter / 2))
+            revert TransferFailed();
     }
 
     /**
