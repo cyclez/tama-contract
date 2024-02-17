@@ -121,7 +121,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     function eat(uint256 tokenId) public payable gameChecks(tokenId) {
         foodToken = IERC20(tamaFoodAddress);
         require(
-            !foodToken.transferFrom(msg.sender, address(this), eatFee),
+            !foodToken.transfer(address(this), eatFee),
             "Not enough TamaFood sent. Maybe not approved?"
         );
         gameData[tokenId].lastEat = block.timestamp;
@@ -213,6 +213,10 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     function setCharacter1(address _tama1) public onlyOwner {
         tama1 = _tama1;
+    }
+
+    function setTamaFoodAddress(address _tamaFoodAddress) public {
+        tamaFoodAddress = _tamaFoodAddress;
     }
 
     /**

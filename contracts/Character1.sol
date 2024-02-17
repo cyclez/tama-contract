@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
 contract Character1 {
+    //SEBIRATCHI
     using Strings for uint256;
 
     string[10] public colorNames = [
