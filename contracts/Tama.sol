@@ -215,7 +215,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         tama1 = _tama1;
     }
 
-    function setTamaFoodAddress(address _tamaFoodAddress) public {
+    function setTamaFoodAddress(address _tamaFoodAddress) public onlyOwner {
         tamaFoodAddress = _tamaFoodAddress;
     }
 
