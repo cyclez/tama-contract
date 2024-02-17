@@ -16,93 +16,53 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     using Strings for uint256;
     uint256 public mintFee = 0.01 ether;
     uint256 public maxMint = 2;
-    uint256 public deathTime = 10 minutes;
     uint256 public eatTime = 5 minutes;
     uint256 public playTime = 5 minutes;
     uint256 public eatPoints = 10;
     uint256 public playPoints = 10;
-    uint256 public eatDecay = 2 minutes;
     uint256 public lv1Trigger = 100;
     uint256 public lv2Trigger = 500;
     uint256 public eatFee = 500 ether; //based on TamaFood Token
     uint256 private _nextTokenId;
 
-    address public tama1 = 0x5AE6CbB9eeE82b920184c1406703aB7b02dcB8a8;
+    address public tama1;
+    address public tama2;
+    address public tama3;
 
     IERC20 foodToken;
     address public tamaFoodAddress;
 
     event levelUp(uint256 tokenId, uint8 newLevel);
     event tokenBorn(uint256 tokenId, uint256 birthTimestamp);
+
     event tokenFeeded(
         uint256 tokenId,
-        uint8 eatLevel,
         uint256 lastCounter,
         uint256 eatTimestamp
     );
+
     event tokenPlayed(
         uint256 tokenId,
         uint256 lastCounter,
         uint256 playTimestamp
     );
-    event tokenDeath(uint256 tokenId, uint256 deathTimestamp);
 
     constructor() ERC721("Tama", "TAMA") Ownable(msg.sender) {}
 
     struct tokenData {
-        bool dead;
         uint8 level;
         uint256 startTime;
         uint256 lastEat;
-        uint8 eatMeter;
         uint256 lastPlay;
         uint256 counter;
     }
 
     mapping(uint256 => tokenData) public gameData;
 
-    function _update(
-        address to,
-        uint256 tokenId,
-        address auth
-    ) internal override(ERC721, ERC721Enumerable) returns (address) {
-        return super._update(to, tokenId, auth);
-    }
-
-    function _increaseBalance(
-        address account,
-        uint128 value
-    ) internal override(ERC721, ERC721Enumerable) {
-        super._increaseBalance(account, value);
-    }
-
-    function tokenURI(
-        uint256 tokenId
-    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-        public
-        view
-        override(ERC721, ERC721Enumerable, ERC721URIStorage)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
     modifier gameChecks(uint256 tokenId) {
         require(
             ownerOf(tokenId) == msg.sender,
             "You are not the tokenId holder"
-        );
-
-        require(
-            gameData[tokenId].dead == false ||
-                block.timestamp - gameData[tokenId].startTime < deathTime,
-            "Your Tama is still dead"
         );
 
         require(gameData[tokenId].startTime > 0, "Your Tama is not yet born");
@@ -159,7 +119,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     function eat(uint256 tokenId) public payable gameChecks(tokenId) {
-        require(gameData[tokenId].eatMeter < 5, "Tamagotchi is sated.");
         foodToken = IERC20(tamaFoodAddress);
         require(
             !foodToken.transferFrom(msg.sender, address(this), eatFee),
@@ -169,7 +128,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         gameData[tokenId].counter += eatPoints;
         emit tokenFeeded(
             tokenId,
-            gameData[tokenId].eatMeter,
             gameData[tokenId].counter,
             gameData[tokenId].lastEat
         );
@@ -186,7 +144,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     /**
-     * -----------  SET METADATA FUNCTIONS  -----------
+     * -----------  SET IMAGE + METADATA FUNCTIONS  -----------
      */
 
     function getTokenURI(uint256 tokenId) public view returns (string memory) {
@@ -225,11 +183,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         maxMint = _maxMint;
     }
 
-    //in seconds
-    function setDeatTime(uint256 _deathTime) public onlyOwner {
-        deathTime = _deathTime;
-    }
-
     function setEatTime(uint256 _eatTime) public onlyOwner {
         eatTime = _eatTime;
     }
@@ -260,6 +213,42 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     function setCharacter1(address _tama1) public onlyOwner {
         tama1 = _tama1;
+    }
+
+    /**
+     * -----------  ERC721Storage FUNCTIONS  -----------
+     */
+
+    function _update(
+        address to,
+        uint256 tokenId,
+        address auth
+    ) internal override(ERC721, ERC721Enumerable) returns (address) {
+        return super._update(to, tokenId, auth);
+    }
+
+    function _increaseBalance(
+        address account,
+        uint128 value
+    ) internal override(ERC721, ERC721Enumerable) {
+        super._increaseBalance(account, value);
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        override(ERC721, ERC721Enumerable, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
 
