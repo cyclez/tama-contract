@@ -37,9 +37,7 @@ contract Character1 {
         return uint256(randomNumber % 10);
     }
 
-    function generateCharacter(
-        uint256 tokenId
-    ) public view returns (string memory) {
+    function generateCharacter() public view returns (string memory) {
         string[3] memory colors;
         uint256[3] memory previous;
         previous[0] = generateRandomNumber(0);

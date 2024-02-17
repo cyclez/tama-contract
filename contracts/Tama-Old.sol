@@ -10,10 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-import "./Character0.sol";
 import "./Character1.sol";
-import "./Character2.sol";
-import "./Character3.sol";
 
 contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     using Strings for uint256;
@@ -28,7 +25,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     uint256 public eatFee = 500 ether; //based on TamaFood Token
     uint256 private _nextTokenId;
 
-    address public tama0;
     address public tama1;
     address public tama2;
     address public tama3;
@@ -78,7 +74,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             gameData[tokenId].level < 1
         ) {
             gameData[tokenId].level = 1;
-            _setTokenURI(tokenId, getTokenURI2(tokenId));
             emit levelUp(tokenId, 1);
         }
 
@@ -87,7 +82,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             gameData[tokenId].level < 2
         ) {
             gameData[tokenId].level = 2;
-            _setTokenURI(tokenId, getTokenURI3(tokenId));
             emit levelUp(tokenId, 1);
         }
     }
@@ -107,7 +101,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     function safeMint(address to) internal {
         uint256 tokenId = _nextTokenId++;
-        _setTokenURI(tokenId, getTokenURI0(tokenId));
+        _setTokenURI(tokenId, getTokenURI(tokenId));
         _safeMint(to, tokenId);
     }
 
@@ -120,7 +114,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             ownerOf(tokenId) == msg.sender,
             "You are not the tokenId holder"
         );
-        _setTokenURI(tokenId, getTokenURI1(tokenId));
         gameData[tokenId].startTime = block.timestamp;
         emit tokenBorn(tokenId, gameData[tokenId].startTime);
     }
@@ -154,31 +147,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      * -----------  SET IMAGE + METADATA FUNCTIONS  -----------
      */
 
-    function getTokenURI0(uint256 tokenId) public view returns (string memory) {
-        Character0 ch0 = Character0(tama0);
-
-        bytes memory dataURI = abi.encodePacked(
-            "{",
-            '"name": "Tama #',
-            tokenId.toString(),
-            '",',
-            '"description": "Your own chain Pet",',
-            '"image": "',
-            ch0.generateCharacter(),
-            '"',
-            "}"
-        );
-
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(dataURI)
-                )
-            );
-    }
-
-    function getTokenURI1(uint256 tokenId) public view returns (string memory) {
+    function getTokenURI(uint256 tokenId) public view returns (string memory) {
         Character1 ch1 = Character1(tama1);
 
         bytes memory dataURI = abi.encodePacked(
@@ -189,54 +158,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             '"description": "Your own chain Pet",',
             '"image": "',
             ch1.generateCharacter(),
-            '"',
-            "}"
-        );
-
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(dataURI)
-                )
-            );
-    }
-
-    function getTokenURI2(uint256 tokenId) public view returns (string memory) {
-        Character2 ch2 = Character2(tama2);
-
-        bytes memory dataURI = abi.encodePacked(
-            "{",
-            '"name": "Tama #',
-            tokenId.toString(),
-            '",',
-            '"description": "Your own chain Pet",',
-            '"image": "',
-            ch2.generateCharacter(),
-            '"',
-            "}"
-        );
-
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(dataURI)
-                )
-            );
-    }
-
-    function getTokenURI3(uint256 tokenId) public view returns (string memory) {
-        Character3 ch3 = Character3(tama3);
-
-        bytes memory dataURI = abi.encodePacked(
-            "{",
-            '"name": "Tama #',
-            tokenId.toString(),
-            '",',
-            '"description": "Your own chain Pet",',
-            '"image": "',
-            ch3.generateCharacter(),
             '"',
             "}"
         );
@@ -290,15 +211,15 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         eatFee = _eatFee;
     }
 
-    function setCharacters(
-        address _tama0,
-        address _tama1,
-        address _tama2,
-        address _tama3
-    ) public onlyOwner {
-        tama0 = _tama0;
+    function setCharacter1(address _tama1) public onlyOwner {
         tama1 = _tama1;
+    }
+
+    function setCharacter2(address _tama2) public onlyOwner {
         tama2 = _tama2;
+    }
+
+    function setCharacter3(address _tama3) public onlyOwner {
         tama3 = _tama3;
     }
 
