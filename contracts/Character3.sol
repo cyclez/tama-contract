@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-contract Character2 {
+contract Character3 {
     //YATTATCHI
     using Strings for uint256;
 
