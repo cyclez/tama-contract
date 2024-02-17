@@ -128,8 +128,8 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     function eat(uint256 tokenId) public payable gameChecks(tokenId) {
         foodToken = IERC20(tamaFoodAddress);
         require(
-            !foodToken.transfer(msg.sender, eatFee),
-            "Not enough TamaFood sent. Maybe not approved?"
+            foodToken.transferFrom(msg.sender, address(this), eatFee),
+            "Not enough TamaFood sent."
         );
         gameData[tokenId].lastEat = block.timestamp;
         gameData[tokenId].counter += eatPoints;
