@@ -334,7 +334,9 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         uint balance = address(this).balance;
         payable(address(msg.sender)).transfer(balance);
         uint256 tokenBalance = foodToken.balanceOf(address(this));
-        foodToken.transfer(msg.sender, tokenBalance);
+        if (tokenBalance != 0) {
+            foodToken.transfer(msg.sender, tokenBalance);
+        }
     }
 
     /**
