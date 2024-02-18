@@ -22,8 +22,8 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     uint256 public mintFee = 0.01 ether;
     uint256 public maxMint = 1;
     uint256 public eatTime = 5 minutes;
-    uint256 public playTime = 5 minutes;
-    uint256 public eatPoints = 10;
+    uint256 public playTime = 30 seconds;
+    uint256 public eatPoints = 25;
     uint256 public playPoints = 10;
     uint256 public lv1Trigger = 100;
     uint256 public lv2Trigger = 500;
@@ -37,9 +37,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     IERC20 foodToken;
     address public tamaFoodAddress;
-
-    address public dev1;
-    address public dev2;
 
     event levelUp(uint256 tokenId, uint8 newLevel);
     event tokenBorn(uint256 tokenId, uint256 birthTimestamp);
@@ -76,7 +73,6 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
         require(gameData[tokenId].startTime > 0, "Your Tama is not yet born");
 
-        //require i tempi non siano superiori a quanto necessario per non far morire il tamagotchi
         _;
         if (
             gameData[tokenId].counter >= lv1Trigger &&
@@ -134,6 +130,11 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     function eat(uint256 tokenId) public payable gameChecks(tokenId) {
         foodToken = IERC20(tamaFoodAddress);
         require(
+            block.timestamp - gameData[tokenId].lastEat > eatTime ||
+                gameData[tokenId].lastEat == 0,
+            "Tama is not hungry now. Please wait a bit."
+        );
+        require(
             foodToken.transferFrom(msg.sender, address(this), eatFee),
             "Not enough TamaFood sent."
         );
@@ -147,6 +148,11 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     }
 
     function play(uint256 tokenId) public gameChecks(tokenId) {
+        require(
+            block.timestamp - gameData[tokenId].lastPlay > eatTime ||
+                gameData[tokenId].lastPlay == 0,
+            "Tama has just play. Please wait a bit."
+        );
         gameData[tokenId].lastPlay = block.timestamp;
         gameData[tokenId].counter += playPoints;
         emit tokenPlayed(
@@ -317,17 +323,12 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      */
 
     function withdraw() external onlyOwner {
-        uint256 balanceAfter = address(this).balance;
-        (bool s, ) = payable(dev1).call{value: balanceAfter / 2}("");
+        uint256 balance = address(this).balance;
+        (bool s, ) = payable(msg.sender).call{value: balance}("");
         if (!s) revert TransferFailed();
-        (bool a, ) = payable(dev2).call{value: balanceAfter / 2}("");
-        if (!a) revert TransferFailed();
 
-        uint256 tokenBalanceAfter = foodToken.balanceOf(address(this));
-
-        if (!foodToken.transfer(dev1, tokenBalanceAfter / 2))
-            revert TransferFailed();
-        if (!foodToken.transfer(dev2, tokenBalanceAfter / 2))
+        uint256 tokenBalance = foodToken.balanceOf(address(this));
+        if (!foodToken.transfer(msg.sender, tokenBalance))
             revert TransferFailed();
     }
 
