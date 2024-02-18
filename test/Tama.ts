@@ -52,7 +52,8 @@ describe("Tama", () => {
         await tama.write.setTamaFoodAddress([tamaFood.address]);
         const valueToken = parseEther("1");
         await tamaFood.write.mint([`0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`], { value: valueToken });
-        await tamaFood.write.approve([`0x5fbdb2315678afecb367f032d93f642f64180aa3`, 500000000000000000000n]);
+        const valueApprova = parseEther("500");
+        await tamaFood.write.approve([`0x5fbdb2315678afecb367f032d93f642f64180aa3`, valueApprova]);
         await tama.write.eat([0n]);
         const getData = await tama.read.gameData([0n]);
         const lastEat = getData[2];
