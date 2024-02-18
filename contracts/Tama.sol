@@ -149,7 +149,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     function play(uint256 tokenId) public gameChecks(tokenId) {
         require(
-            block.timestamp - gameData[tokenId].lastPlay > eatTime ||
+            block.timestamp - gameData[tokenId].lastPlay > playTime ||
                 gameData[tokenId].lastPlay == 0,
             "Tama has just play. Please wait a bit."
         );
