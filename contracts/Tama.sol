@@ -330,14 +330,11 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      * -----------  Financial Functions  -----------
      */
 
-    function withdraw() external onlyOwner {
-        uint256 balance = address(this).balance;
-        (bool s, ) = payable(msg.sender).call{value: balance}("");
-        if (!s) revert TransferFailed();
-
+    function withdraw() public onlyOwner {
+        uint balance = address(this).balance;
+        payable(address(msg.sender)).transfer(balance);
         uint256 tokenBalance = foodToken.balanceOf(address(this));
-        if (!foodToken.transfer(msg.sender, tokenBalance))
-            revert TransferFailed();
+        foodToken.transfer(msg.sender, tokenBalance);
     }
 
     /**
