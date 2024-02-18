@@ -48,6 +48,12 @@ describe("Tama", () => {
     expect(startCheck).not.equal(0n);
   });
 
+  it("Should not hatch more than once", async function () {
+    const { tama } = await loadFixture(deployContractFixture);
+    await tama.write.start([0n]);
+    expect(tama.write.start([0n])).to.be.rejected;
+  });
+
   it("Should play", async function () {
     const { tama } = await loadFixture(deployContractFixture);
     await tama.write.start([0n]);
