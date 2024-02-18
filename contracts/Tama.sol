@@ -166,7 +166,9 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      * -----------  SET IMAGE + METADATA FUNCTIONS  -----------
      */
 
-    function getTokenURI0(uint256 tokenId) public view returns (string memory) {
+    function getTokenURI0(
+        uint256 tokenId
+    ) internal view returns (string memory) {
         Character0 ch0 = Character0(tama0);
 
         bytes memory dataURI = abi.encodePacked(
@@ -190,7 +192,9 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             );
     }
 
-    function getTokenURI1(uint256 tokenId) public view returns (string memory) {
+    function getTokenURI1(
+        uint256 tokenId
+    ) internal view returns (string memory) {
         Character1 ch1 = Character1(tama1);
 
         bytes memory dataURI = abi.encodePacked(
@@ -214,7 +218,9 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             );
     }
 
-    function getTokenURI2(uint256 tokenId) public view returns (string memory) {
+    function getTokenURI2(
+        uint256 tokenId
+    ) internal view returns (string memory) {
         Character2 ch2 = Character2(tama2);
 
         bytes memory dataURI = abi.encodePacked(
@@ -238,7 +244,9 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             );
     }
 
-    function getTokenURI3(uint256 tokenId) public view returns (string memory) {
+    function getTokenURI3(
+        uint256 tokenId
+    ) internal view returns (string memory) {
         Character3 ch3 = Character3(tama3);
 
         bytes memory dataURI = abi.encodePacked(
