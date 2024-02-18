@@ -125,6 +125,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
             ownerOf(tokenId) == msg.sender,
             "You are not the tokenId holder"
         );
+        require(gameData[tokenId].startTime == 0, "Token already Hatched");
         _setTokenURI(tokenId, getTokenURI1(tokenId));
         gameData[tokenId].startTime = block.timestamp;
         emit tokenBorn(tokenId, gameData[tokenId].startTime);
