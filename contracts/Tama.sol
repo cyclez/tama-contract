@@ -30,13 +30,19 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
     uint256 public eatFee = 500 ether; //based on TamaFood Token
     uint256 private _nextTokenId;
 
+    //SVG Images Contracts
     address public tama0;
     address public tama1;
     address public tama2;
     address public tama3;
 
+    //Food Token to feed the TAMA
     IERC20 foodToken;
     address public tamaFoodAddress;
+
+    /**
+     * -----------  EVENTS  -----------
+     */
 
     event levelUp(uint256 tokenId, uint8 newLevel);
     event tokenBorn(uint256 tokenId, uint256 birthTimestamp);
@@ -55,6 +61,10 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     constructor() ERC721("Tama", "TAMA") Ownable(msg.sender) {}
 
+    /**
+     * -----------  GAMEDATA STRUCTURE  -----------
+     */
+
     struct tokenData {
         uint8 level;
         uint256 startTime;
@@ -65,6 +75,10 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
 
     mapping(uint256 => tokenData) public gameData;
 
+    /**
+     * -----------  CHECKS COMMON TO GAME FUNCTIONS  -----------
+     */
+
     modifier gameChecks(uint256 tokenId) {
         require(
             ownerOf(tokenId) == msg.sender,
@@ -74,6 +88,8 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         require(gameData[tokenId].startTime > 0, "Your Tama is not yet born");
 
         _;
+
+        //Level Up management
         if (
             gameData[tokenId].counter >= lv1Trigger &&
             gameData[tokenId].level < 1
@@ -116,6 +132,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      * -----------  GAME FUNCTIONS  -----------
      */
 
+    //Hatches the Tama
     function start(uint256 tokenId) public {
         require(
             ownerOf(tokenId) == msg.sender,
@@ -127,6 +144,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         emit tokenBorn(tokenId, gameData[tokenId].startTime);
     }
 
+    //Feeds the Tama with the TamaFood ERC-20 token
     function eat(uint256 tokenId) public payable gameChecks(tokenId) {
         foodToken = IERC20(tamaFoodAddress);
         require(
@@ -147,6 +165,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
         );
     }
 
+    //Plays with the Tama
     function play(uint256 tokenId) public gameChecks(tokenId) {
         require(
             block.timestamp - gameData[tokenId].lastPlay > playTime ||
@@ -166,6 +185,7 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      * -----------  SET IMAGE + METADATA FUNCTIONS  -----------
      */
 
+    //Sets SVG encoding for each of the 4 different evolutions: egg, character1, character2, character3.
     function getTokenURI0(
         uint256 tokenId
     ) internal view returns (string memory) {
@@ -330,13 +350,14 @@ contract Tama is ERC721, ERC721URIStorage, ERC721Enumerable, Ownable {
      * -----------  Financial Functions  -----------
      */
 
-    function withdraw() public onlyOwner {
+    function withdraw() public payable onlyOwner {
         uint balance = address(this).balance;
-        payable(address(msg.sender)).transfer(balance);
-        uint256 tokenBalance = foodToken.balanceOf(address(this));
-        if (tokenBalance != 0) {
+        (bool sent, bytes memory data) = msg.sender.call{value: balance}("");
+        require(sent, "Failed to send Ether");
+        //uint256 tokenBalance = foodToken.balanceOf(address(this));
+        /*if (tokenBalance != 0) {
             foodToken.transfer(msg.sender, tokenBalance);
-        }
+        }*/
     }
 
     /**
