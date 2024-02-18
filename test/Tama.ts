@@ -40,7 +40,7 @@ describe("Tama", () => {
     expect(await tama.read.totalSupply()).to.equal(1n);
   });
 
-  it("Should start", async function () {
+  it("Should hatch", async function () {
     const { tama } = await loadFixture(deployContractFixture);
     await tama.write.start([0n]);
     const getData = await tama.read.gameData([0n]);
