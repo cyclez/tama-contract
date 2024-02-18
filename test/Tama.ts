@@ -25,7 +25,7 @@ describe("Tama", () => {
 
     return { tama };
   }
-  it("Should fill contracts", async function () {
+  it("Should fill SVG contracts", async function () {
     const { tama } = await loadFixture(deployContractFixture);
 
     const char0 = await tama.read.tama0();
