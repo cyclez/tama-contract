@@ -84,4 +84,19 @@ describe("Tama", () => {
     const lastEat = getData[2];
     expect(lastEat).not.equal(0n);
   });
+
+  it("Should change Play points and go to 500 points", async function () {
+    const { tama } = await loadFixture(deployContractFixture);
+    await tama.write.start([0n]);
+    await tama.write.setPlayTime([0n]);
+    await tama.write.setPlayPoints([100n]);
+    await tama.write.play([0n]);
+    await tama.write.play([0n]);
+    await tama.write.play([0n]);
+    await tama.write.play([0n]);
+    await tama.write.play([0n]);
+    const getData = await tama.read.gameData([0n]);
+    const counter = getData[4];
+    expect(counter).equal(500n);
+  });
 });
