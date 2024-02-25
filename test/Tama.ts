@@ -18,11 +18,9 @@ describe("Tama", () => {
       character2.address,
       character3.address,
     ]);
-
+    await tama.write.setMaxMint([10n]);
     const value = parseEther("0.01");
-    const one = 1;
     await tama.write.purchase([1n], { value });
-
     return { tama };
   }
   it("Should fill SVG contracts", async function () {
@@ -37,11 +35,16 @@ describe("Tama", () => {
 
   it("Should mint", async function () {
     const { tama } = await loadFixture(deployContractFixture);
+    const value = parseEther("0.01");
     expect(await tama.read.totalSupply()).to.equal(1n);
+    const gas = await tama.estimateGas.purchase([1n], { value });
+    console.log("Mint gas: " + gas);
   });
 
   it("Should hatch", async function () {
     const { tama } = await loadFixture(deployContractFixture);
+    const gas = await tama.estimateGas.start([0n]);
+    console.log("Hatching gas: " + gas);
     await tama.write.start([0n]);
     const getData = await tama.read.gameData([0n]);
     const startCheck = getData[1];
@@ -75,7 +78,7 @@ describe("Tama", () => {
     });
     const valueApprova = parseEther("500");
     await tamaFood.write.approve([
-      `0x5fbdb2315678afecb367f032d93f642f64180aa3`,
+      `0xdf951d2061b12922bfbf22cb17b17f3b39183570`,
       valueApprova,
     ]);
     await tama.write.start([0n]);
