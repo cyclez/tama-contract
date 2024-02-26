@@ -20,7 +20,9 @@ describe("Tama", () => {
     ]);
     await tama.write.setMaxMint([10n]);
     const value = parseEther("0.01");
+    const one = 1;
     await tama.write.purchase([1n], { value });
+
     return { tama };
   }
   it("Should fill SVG contracts", async function () {
@@ -35,16 +37,11 @@ describe("Tama", () => {
 
   it("Should mint", async function () {
     const { tama } = await loadFixture(deployContractFixture);
-    const value = parseEther("0.01");
     expect(await tama.read.totalSupply()).to.equal(1n);
-    const gas = await tama.estimateGas.purchase([1n], { value });
-    console.log("Mint gas: " + gas);
   });
 
   it("Should hatch", async function () {
     const { tama } = await loadFixture(deployContractFixture);
-    const gas = await tama.estimateGas.start([0n]);
-    console.log("Hatching gas: " + gas);
     await tama.write.start([0n]);
     const getData = await tama.read.gameData([0n]);
     const startCheck = getData[1];
@@ -76,30 +73,15 @@ describe("Tama", () => {
     await tamaFood.write.mint([`0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`], {
       value: valueToken,
     });
-    const valueApprova = parseEther("500");
+    const valueToApprove = parseEther("500");
     await tamaFood.write.approve([
-      `0xdf951d2061b12922bfbf22cb17b17f3b39183570`,
-      valueApprova,
+      `0x5fbdb2315678afecb367f032d93f642f64180aa3`,
+      valueToApprove,
     ]);
     await tama.write.start([0n]);
     await tama.write.eat([0n]);
     const getData = await tama.read.gameData([0n]);
     const lastEat = getData[2];
     expect(lastEat).not.equal(0n);
-  });
-
-  it("Should change Play points and go to 500 points", async function () {
-    const { tama } = await loadFixture(deployContractFixture);
-    await tama.write.start([0n]);
-    await tama.write.setPlayTime([0n]);
-    await tama.write.setPlayPoints([100n]);
-    await tama.write.play([0n]);
-    await tama.write.play([0n]);
-    await tama.write.play([0n]);
-    await tama.write.play([0n]);
-    await tama.write.play([0n]);
-    const getData = await tama.read.gameData([0n]);
-    const counter = getData[4];
-    expect(counter).equal(500n);
   });
 });

@@ -25,10 +25,10 @@ const config: HardhatUserConfig = {
         url: "https://arbitrum-sepolia.infura.io/v3/" + process.env.INFURA_API_KEY,
       }
     }
-  }/* ,
+  },
   gasReporter: {
     enabled: true,
-  } */
+  }
 };
 
 export default config;
